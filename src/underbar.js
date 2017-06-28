@@ -217,15 +217,85 @@
     }, false);
   };
 
+  // expect(_.every([true, false, 1], _.identity)).to.be.false;
 
-  // Determine whether all of the elements match a truth test.
+// Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+    if(!iterator){
+      iterator = function(item) {return item}
+    }
+    return _.reduce(collection, function(result, item){
+      if (!iterator(item)) {
+        result = false;
+      }
+
+      return result;
+    }, true);
     // TIP: Try re-using reduce() here.
+    // var everyItemisTrue = true;
+
+    // console.log(_.identity(1));
+    // return _.reduce(collection, function(item){
+    //   console.log('everyItem is True? ', everyItemisTrue, 'item is', item, 'iterator is ', iterator(item));
+    //   return item;
+      // if (!iterator(item)){
+      //   return false;
+      // } else {
+      //   return true;        
+      // }
+
+    // }, true)
+  /*
+  //call reduce
+  //set the accumulator to true
+  //in the anon function --> itll check !iterator(item) item === array[0]
+    let accumulator = true;
+  return _.reduce(collection, function(item) {
+    console.log('accumulator is for this iteration ', accumulator);
+
+    if(!iterator(item)){
+      accumulator = false;
+    } 
+    return accumulator;
+  }, true);
+   */
+   /*
+    using reduce iterating over the items of a collection
+    and finding the result of the item using a function (called iterator)
+    is the accumulator false ? set the accumulator to false : run iterator on the item and return the result
+   */
   };
 
+  
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
   _.some = function(collection, iterator) {
+    var result = false;
+    
+    if(iterator === undefined) {
+      _.each(collection, function(item) {
+        if(item) {result = true}
+      });
+    } else {
+      _.each(collection, function(item) {
+        if(iterator(item)) {
+          result = true;
+        }
+      })
+    }
+    //if the iterator is undefined go through
+    // each element of an array
+    // at each iteration check to see if the element is a truthy value
+
+    //else
+    // pass in the use the iterator on the item
+    // if there is a truth case on the iterator, toggle result to true
+  
+    
+
+    return result;
+    // iterate check each item of collection -- if iterator(item) check to see if false
+    // if one of them is true it now becomes true
     // TIP: There's a very clever way to re-use every() here.
   };
 
@@ -249,11 +319,44 @@
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    var otherObjects  = arguments.length > 1 ? Array.apply(null, arguments) : {};
+    //console.log(otherProperties) 
+  
+    for (var i = 0; i < otherObjects.length; i++) {
+      var currentObject = otherObjects[i]   
+      for (var key in currentObject){
+        obj[key] = currentObject[key]
+      }
+    }
+    return obj
+    /*
+      checking to make sure there are more than one argument
+        take the arguments after the object and place them into an array
+        iterate
+          add the properties of the objects 
+
+      return the obj
+    */
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    var otherObjects = arguments.length > 1 ? Array.apply(null, arguments) : {};
+
+    for(var i = 0; i < otherObjects.length; i++) {
+      var currObject = otherObjects[i];
+      for(var key in currObject) {
+        if(!obj.hasOwnProperty(key)) {
+          obj[key] = currObject[key];
+        }
+      }
+    }
+    return obj;
+
+    /*
+      
+    */
   };
 
 
@@ -288,6 +391,7 @@
     };
   };
 
+
   // Memorize an expensive function's results by storing them. You may assume
   // that the function only takes primitives as arguments.
   // memoize could be renamed to oncePerUniqueArgumentList; memoize does the
@@ -297,7 +401,37 @@
   // already computed the result for the given argument and return that value
   // instead if possible.
   _.memoize = function(func) {
+
+    var memo = {};
+
+    return function() {
+
+      var args = JSON.stringify(arguments);
+      if(!memo.hasOwnProperty(args)) {
+        var result = func.apply(this, arguments);
+        memo[args] = result;
+      } 
+        console.log(memo[args])
+        return memo[args];
+      
+    }
+    
+    /*
+      {'add(1,2)': 3}
+      declare a object that will remember the arguments of func
+      return an anonymous function
+        if (the object has the property with the specific arguments) return the 
+          value of that property
+        else run the function with specified arguments 
+          Assign the key to be the function with the arguments
+          assign the value to be the result;
+        }
+    */
   };
+
+    
+
+    //memory add(2, 3)  // 5
 
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
