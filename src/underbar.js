@@ -411,10 +411,10 @@
         var result = func.apply(this, arguments);
         memo[args] = result;
       } 
-        console.log(memo[args])
+
         return memo[args];
       
-    }
+    };
     
     /*
       {'add(1,2)': 3}
@@ -430,9 +430,6 @@
   };
 
     
-
-    //memory add(2, 3)  // 5
-
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
   //
@@ -440,6 +437,16 @@
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    //console.log(scope)
+    
+
+    var newArguments = Array.prototype.slice.call(arguments, 2)
+  
+    setTimeout(function(){
+      return func.apply(this,newArguments)
+    }, wait)
+
+    
   };
 
 
@@ -490,6 +497,22 @@
   //
   // Hint: Use Array.isArray to check if something is an array
   _.flatten = function(nestedArray, result) {
+
+    let results = [];
+
+    if(Array.isArray(nestedArray)) { // recursive case
+      for(let item of nestedArray) {
+        results.push(_.flatten(item));
+      }
+      return results;
+    } else { // base case
+      return results.concat(nestedArray);
+    }
+
+
+    //take the nestedArray
+      //if the nestedArray is an array run the function on the items in the array
+      //else concat the item in an array to the result array.
   };
 
   // Takes an arbitrary number of arrays and produces an array that contains
